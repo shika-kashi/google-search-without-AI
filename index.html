@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Google（生成AI非表示 用・検索ラッパー）</title>
+  <style>
+    :root{
+      --bg:#f8f9fa;
+      --card:#fff;
+      --accent:#1a73e8;
+      --muted:#5f6368;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(180deg,var(--bg),#ffffff 60%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+    }
+    .search-card{
+      width: min(820px, 92%);
+      background:var(--card);
+      border-radius:12px;
+      box-shadow: 0 6px 20px rgba(60,64,67,0.15);
+      padding:36px 28px;
+      text-align:center;
+    }
+    h1{font-size:18px;margin:0 0 18px 0;color:#222}
+    form{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:center;
+      margin-top:6px;
+    }
+    /* テキストエリアをGoogleっぽい大きさに */
+    textarea.search-box{
+      width:100%;
+      max-width:680px;
+      min-height:44px; /* 見た目はinputと同等 */
+      resize:none;
+      padding:12px 14px;
+      font-size:16px;
+      line-height:20px;
+      border-radius:24px;
+      border:1px solid rgba(0,0,0,0.12);
+      box-shadow: none;
+      outline:none;
+      box-sizing:border-box;
+      font-family:inherit;
+    }
+    textarea.search-box:focus{
+      border-color: rgba(26,115,232,0.9);
+      box-shadow: 0 1px 0 rgba(26,115,232,0.06), 0 4px 18px rgba(26,115,232,0.08);
+    }
+    button.search-btn{
+      background:var(--accent);
+      color:#fff;
+      border:none;
+      border-radius:20px;
+      padding:10px 16px;
+      font-size:15px;
+      cursor:pointer;
+      box-shadow: 0 2px 6px rgba(26,115,232,0.18);
+    }
+    button.search-btn:active{transform:translateY(1px)}
+    .help{font-size:13px;margin-top:12px;color:var(--muted)}
+    .footer-note{font-size:12px;margin-top:10px;color:#9aa0a6}
+
+    @media(min-width:980px){
+      .search-card{padding:48px 40px}
+      textarea.search-box{min-height:52px}
+    }
+  </style>
+</head>
+<body>
+  <div class="search-card">
+    <h1>Google 検索（生成AIの要約の表示を回避する）</h1>
+    <form id="searchForm" action="" onsubmit="doSearch(event)">
+      <textarea id="q" class="search-box" placeholder="検索ワードを入力してEnter" aria-label="検索ワード" rows="1"></textarea>
+      <button class="search-btn" type="submit">検索</button>
+    </form>
+  </div>
+
+  <script>
+    const textarea = document.getElementById('q');
+    const form = document.getElementById('searchForm');
+
+    //activeにする
+    textarea.focus();
+
+    // Enterで検索（単純なEnterは送信、Shift+Enterで改行）
+    textarea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
+    function doSearch(e){
+      if (e) e.preventDefault();
+      const raw = textarea.value.trim();
+      if (!raw) return;
+      // q="検索ワード" の形になるようにクォートを付ける
+      // encodeURIComponent で安全にエンコード
+      const quoted = encodeURIComponent(raw);
+      const url = 'https://www.google.com/search?udm=14&q=' + quoted;
+      // 新しいタブで開く
+      window.location.href = url;
+    }
+
+    // ペーストしてEnterを押す人のためにフォーカス時に全選択
+    textarea.addEventListener('focus', (e) => { textarea.select(); });
+  </script>
+</body>
+</html>
